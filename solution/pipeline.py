@@ -39,30 +39,35 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
     emp['emp_id'] = normalize_emp_id(emp['emp_id'])
     sal['emp_id'] = normalize_emp_id(sal['emp_id'])
 
-    duplicates = sal.loc[sal['emp_id'].duplicated(keep=False), 'emp_id'].drop_duplicates().tolist()
-    if duplicates:
+    dup_mask = sal['emp_id'].duplicated(keep=False)
+    if dup_mask.any():
+        duplicates = sal.loc[dup_mask, 'emp_id'].unique().tolist()
         raise ValueError(f'Duplicate normalized salary keys: {duplicates}')
 
     emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True, format='mixed')
-    emp = emp.loc[emp['_event_utc'].between(WINDOW_START, WINDOW_END, inclusive='both')].copy()
+    emp = emp.loc[emp['_event_utc'].between(WINDOW_START, WINDOW_END, inclusive='both')]
 
     merged = emp.merge(sal[['emp_id', 'annual_salary']], on='emp_id', how='left', validate='many_to_one', sort=False)
-    merged['adjusted_salary'] = merged['annual_salary'].fillna(0).apply(round_half_up).astype('int64')
-    contractor = merged['employment_type'].eq('CONTRACTOR')
-    merged.loc[contractor, 'adjusted_salary'] = (
-        merged.loc[contractor, 'annual_salary']
-        .fillna(0)
-        .apply(lambda x: round_half_up(Decimal(str(x)) * Decimal('0.85')))
-        .astype('int64')
-    )
+    base_salaries = merged['annual_salary'].fillna(0)
+    merged['adjusted_salary'] = base_salaries.apply(round_half_up).astype('int64')
+
+    contractor_mask = merged['employment_type'].eq('CONTRACTOR')
+    if contractor_mask.any():
+        contractor_salaries = base_salaries.loc[contractor_mask]
+        unique_salaries = contractor_salaries.unique()
+        discount_cache = {
+            s: round_half_up(Decimal(str(s)) * Decimal('0.85'))
+            for s in unique_salaries
+        }
+        merged.loc[contractor_mask, 'adjusted_salary'] = contractor_salaries.map(discount_cache).astype('int64')
 
     result = merged.groupby('emp_id', sort=False, as_index=False).agg(
         headcount=('emp_id', 'size'), total_salary=('adjusted_salary', 'sum')
     )
     result = result.reindex(columns=OUTPUT_COLUMNS)
     result['emp_id'] = result['emp_id'].astype(object)
-    result['headcount'] = result['headcount'].astype('int64')
-    result['total_salary'] = result['total_salary'].astype('int64')
+    result['headcount'] = result['headcount'].fillna(0).astype('int64')
+    result['total_salary'] = result['total_salary'].fillna(0).astype('int64')
     return result.reset_index(drop=True)
 
 

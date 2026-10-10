@@ -3,7 +3,21 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import pandas as pd
 
-_APP_DIR = Path('/app') if Path('/app').exists() else Path(__file__).resolve().parent
+
+def _find_app_dir() -> Path:
+    if Path('/app/data').exists():
+        return Path('/app')
+    cur = Path(__file__).resolve().parent
+    if (cur / 'data').exists():
+        return cur
+    for parent in [cur, cur.parent, cur.parent.parent]:
+        candidate = parent / 'environment' / 'app'
+        if (candidate / 'data').exists():
+            return candidate
+    return cur
+
+
+_APP_DIR = _find_app_dir()
 DATA_DIR = Path(os.environ.get('DATA_DIR', str(_APP_DIR / 'data')))
 OUTPUT_PATH = Path(os.environ.get('OUTPUT_PATH', str(_APP_DIR / 'output' / 'report.csv')))
 WINDOW_START = pd.Timestamp('2024-01-01 00:00:00+00:00')
@@ -53,8 +67,19 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
 
 
 def main() -> None:
-    employees = pd.read_csv(DATA_DIR / 'employees.csv')
-    salaries = pd.read_csv(DATA_DIR / 'salaries.csv')
+    if not DATA_DIR.exists():
+        raise FileNotFoundError(f"Data directory not found: {DATA_DIR}")
+
+    emp_file = DATA_DIR / 'employees.csv'
+    sal_file = DATA_DIR / 'salaries.csv'
+
+    if not emp_file.exists():
+        raise FileNotFoundError(f"Employees file not found: {emp_file}")
+    if not sal_file.exists():
+        raise FileNotFoundError(f"Salaries file not found: {sal_file}")
+
+    employees = pd.read_csv(emp_file)
+    salaries = pd.read_csv(sal_file)
     result = build_report(employees, salaries)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT_PATH, index=False)

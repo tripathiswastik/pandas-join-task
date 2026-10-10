@@ -200,7 +200,10 @@ def test_combined_reordered_inputs_interleaved_ids_and_half_up_boundaries():
 
 def test_written_pipeline_output_matches_contract_fixture():
     """Combined: executable pipeline writes the shipped fixture with the required schema and values."""
-    subprocess.run([sys.executable, str(APP / "pipeline.py")], check=True)
+    env = os.environ.copy()
+    env["DATA_DIR"] = str(APP / "data")
+    env["OUTPUT_PATH"] = str(OUT)
+    subprocess.run([sys.executable, str(APP / "pipeline.py")], env=env, check=True)
     out = pd.read_csv(OUT)
     assert list(out.columns) == COLS
     assert out.to_dict("records") == [

@@ -71,8 +71,8 @@ graph TD;
 
 ```bash
 # Clone the repository
-git clone https://github.com/tripathiswastik/pandas-join-final-task-hard.git
-cd pandas-join-final-task-hard
+git clone https://github.com/tripathiswastik/pandas-join-task.git
+cd pandas-join-task
 
 # Install test dependencies
 pip install -r tests/requirements.txt

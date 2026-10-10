@@ -118,4 +118,4 @@ docker run --rm -v $(pwd)/tests:/tests pandas-benchmark bash /tests/test.sh
 
 ## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///d:/ag-ai/pandas-join-final-task-hard/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

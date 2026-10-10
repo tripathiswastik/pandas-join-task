@@ -1,0 +1,15 @@
+Agent produces one output row per normalized employee ID with the required headcount and total salary values, +5
+Agent correctly joins employee rows to their unique normalized salary records while preserving employees without matching salaries, +5
+Agent applies the specified employee timestamp reporting window with inclusive UTC boundaries, +3
+Agent correctly normalizes naive and timezone-aware employee timestamps to UTC before chronological filtering, +3
+Agent calculates contractor salaries using the required 0.85 adjustment and round-half-up semantics, +3
+Agent preserves pandas int64 for headcount and total_salary, including empty results, +2
+Agent preserves first-appearance order and keeps results independent of input column order and pandas index values, +2
+Agent correctly handles the interaction of identifier normalization, column/index independence, UTC boundary filtering, repeated employee rows, contractor round-half-up adjustment, and downstream aggregation, +3
+Agent silently accepts duplicate normalized salary keys and permits invalid salary cardinality, -5
+Agent compares timestamps without first unifying their timezone representation, -5
+Agent applies contractor adjustments without propagating the adjusted value to downstream salary aggregation, -3
+Agent modifies whitespace in non-key employee fields while normalizing identifiers, -2
+Agent relies on input column positions or pandas index alignment instead of matching by required column names and normalized employee identifiers, -3
+Agent returns headcount or total_salary with a dtype other than the required int64, -2
+Agent uses truncation or banker's rounding instead of round-half-up when calculating adjusted contractor salaries, -2

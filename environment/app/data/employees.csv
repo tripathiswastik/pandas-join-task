@@ -1,0 +1,6 @@
+emp_id,employment_type,event_ts,notes
+ e001 ,FULL_TIME,2024-01-15 09:00:00, keep note 
+E002,CONTRACTOR,2024-06-01T23:30:00-05:00,contract
+E003,FULL_TIME,2025-01-01T00:30:00+05:30,new year offset
+E004,CONTRACTOR,2023-12-31T20:00:00-05:00,boundary
+E001,FULL_TIME,2024-10-01 00:00:00,second

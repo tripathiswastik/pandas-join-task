@@ -1,0 +1,8 @@
+solution/
+tests/
+.git/
+.gitignore
+.gitattributes
+__pycache__/
+*.pyc
+.pytest_cache/

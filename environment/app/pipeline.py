@@ -33,11 +33,15 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
     emp = emp.loc[emp['_event_utc'].between(WINDOW_START, WINDOW_END, inclusive='both')].copy()
 
     merged = emp.merge(sal[['emp_id', 'annual_salary']], on='emp_id', how='left', validate='many_to_one', sort=False)
-    merged['adjusted_salary'] = merged['annual_salary'].fillna(0).infer_objects(copy=False).map(round_half_up).astype('int64')
+    merged['adjusted_salary'] = merged['annual_salary'].fillna(0).apply(round_half_up).astype('int64')
     contractor = merged['employment_type'].eq('CONTRACTOR')
-    merged.loc[contractor, 'adjusted_salary'] = merged.loc[contractor, 'annual_salary'].fillna(0).map(
-        lambda x: round_half_up(Decimal(str(x)) * Decimal('0.85'))
-    ).astype('int64')
+    merged.loc[contractor, 'adjusted_salary'] = (
+        merged.loc[contractor, 'annual_salary']
+        .fillna(0)
+        .astype(str)
+        .apply(lambda x: round_half_up(Decimal(x) * Decimal('0.85')))
+        .astype('int64')
+    )
 
     result = merged.groupby('emp_id', sort=False, as_index=False).agg(
         headcount=('emp_id', 'size'), total_salary=('adjusted_salary', 'sum')

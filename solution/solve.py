@@ -2,6 +2,7 @@
 
 import os
 import pathlib
+import shutil
 import sys
 import pandas as pd
 
@@ -13,6 +14,10 @@ APP_DIR = pathlib.Path(
         "/app" if pathlib.Path("/app").exists() else str(REPO_ROOT / "environment" / "app"),
     )
 )
+
+# Mirror solve.sh by deploying reference solution into application directory
+if (SOLUTION_DIR / "pipeline.py").exists() and (APP_DIR / "pipeline.py").resolve() != (SOLUTION_DIR / "pipeline.py").resolve():
+    shutil.copy(SOLUTION_DIR / "pipeline.py", APP_DIR / "pipeline.py")
 
 sys.path.insert(0, str(SOLUTION_DIR))
 from pipeline import build_report  # noqa: E402

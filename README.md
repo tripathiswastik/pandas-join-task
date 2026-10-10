@@ -16,17 +16,17 @@ An enterprise-grade, stateful data pipeline evaluation benchmark designed for au
 ## 🏗️ Architecture / Workflow
 
 ```mermaid
-graph TD;
-    A[Raw employees.csv] --> B[Normalize emp_id & Parse Mixed Timezones to UTC];
-    C[Raw salaries.csv] --> D[Normalize emp_id & Validate Cardinality / Check Duplicates];
-    B --> E{Inclusive 2024 Window Filter};
-    E -->|Filtered Employees| F[Left Join on emp_id: validate=many_to_one];
-    D -->|Validated Salaries| F;
-    F --> G[Contractor Adjustment: 0.85 x Salary with Round-Half-Up];
-    G --> H[Group by emp_id in First-Appearance Order];
-    H --> I[Aggregate: headcount int64 & total_salary int64];
-    I --> J[/app/output/report.csv];
-    J --> K[Verifier Test Harness pytest + CTRF];
+graph TD
+    A["Raw employees.csv"] --> B["Normalize emp_id & Parse Mixed Timezones to UTC"]
+    C["Raw salaries.csv"] --> D["Normalize emp_id & Validate Cardinality"]
+    B --> E{"Inclusive 2024 Window Filter"}
+    E -->|Filtered Employees| F["Left Join on emp_id: validate=many_to_one"]
+    D -->|Validated Salaries| F
+    F --> G["Contractor Adjustment: 0.85 x Salary with Round-Half-Up"]
+    G --> H["Group by emp_id in First-Appearance Order"]
+    H --> I["Aggregate: headcount int64 & total_salary int64"]
+    I --> J["/app/output/report.csv"]
+    J --> K["Verifier Test Harness: pytest + CTRF"]
 ```
 
 ### Repository Structure

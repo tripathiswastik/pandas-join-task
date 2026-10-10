@@ -56,5 +56,6 @@ def main() -> None:
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT_PATH, index=False)
 
+
 if __name__ == '__main__':
     main()

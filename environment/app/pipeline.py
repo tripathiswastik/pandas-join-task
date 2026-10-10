@@ -21,7 +21,7 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
     emp = emp[(emp['event_ts'] >= WINDOW_START.tz_localize(None)) & (emp['event_ts'] <= WINDOW_END.tz_localize(None))]
     merged = emp.merge(sal, on='emp_id', how='left')
     merged['adjusted_salary'] = merged['annual_salary'].fillna(0)
-    merged.loc[merged['employment_type'] == 'CONTRACTOR', 'adjusted_salary'] * 0.85
+    merged.loc[merged['employment_type'] == 'CONTRACTOR', 'adjusted_salary'] * 0.85  # noqa: B018
     result = merged.groupby('emp_id', sort=False).agg(
         headcount=('emp_id', 'size'), total_salary=('adjusted_salary', 'sum')
     ).reset_index()

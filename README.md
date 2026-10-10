@@ -1,4 +1,4 @@
-# Pandas Join Final Task (Hard) — Terminal-Bench
+# Pandas Join Task (Hard) — Terminal-Bench
 
 ![Python Version](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Pandas](https://img.shields.io/badge/pandas-2.2.2-blueviolet) ![Benchmark](https://img.shields.io/badge/benchmark-Terminal--Bench-blue)
 

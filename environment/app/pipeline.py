@@ -38,8 +38,7 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
     merged.loc[contractor, 'adjusted_salary'] = (
         merged.loc[contractor, 'annual_salary']
         .fillna(0)
-        .astype(str)
-        .apply(lambda x: round_half_up(Decimal(x) * Decimal('0.85')))
+        .apply(lambda x: round_half_up(Decimal(str(x)) * Decimal('0.85')))
         .astype('int64')
     )
 

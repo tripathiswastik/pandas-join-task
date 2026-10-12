@@ -41,10 +41,13 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
 
     dup_mask = sal['emp_id'].duplicated(keep=False)
     if dup_mask.any():
-        duplicates = sal.loc[dup_mask, 'emp_id'].unique().tolist()
+        duplicates = list(sal.loc[dup_mask, 'emp_id'].unique())
         raise ValueError(f'Duplicate normalized salary keys: {duplicates}')
 
-    emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True, format='mixed')
+    try:
+        emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True, format='mixed')
+    except (ValueError, TypeError):
+        emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True)
     emp = emp.loc[emp['_event_utc'].between(WINDOW_START, WINDOW_END, inclusive='both')]
 
     merged = emp.merge(sal[['emp_id', 'annual_salary']], on='emp_id', how='left', validate='many_to_one', sort=False)

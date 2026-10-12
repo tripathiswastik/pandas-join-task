@@ -1,4 +1,8 @@
-"""Reference solution execution runner for pandas-join-final-task-hard."""
+"""
+Python Version: 3.10+ (Target: Python 3.11, Pandas 2.2.2, NumPy 1.26.4)
+Purpose: Reference solution execution runner for pandas-join-final-task-hard benchmark.
+Runs-in: Host evaluation environment or container sandbox (/app) deployed via solve.sh.
+"""
 
 import os
 import pathlib

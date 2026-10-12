@@ -1,4 +1,6 @@
-# python:3.11-slim is used instead of the canonical base because this task has no non-Python system dependencies beyond tmux/asciinema, so the slim image is sufficient; the image is digest-pinned for reproducibility.
+# Python Version: 3.11 (python:3.11-slim@sha256:d1053354624536b044162aaab1e418bd000ea35184fb1ae098ab3166b1072e72)
+# Purpose: Execution runtime sandbox for candidate agent solving the pandas pipeline reconciliation challenge.
+# Runs-in: Agent execution container (/app) under Terminal-Bench separate environment mode.
 FROM python:3.11-slim@sha256:d1053354624536b044162aaab1e418bd000ea35184fb1ae098ab3166b1072e72
 
 WORKDIR /app

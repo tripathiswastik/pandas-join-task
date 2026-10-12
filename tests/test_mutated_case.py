@@ -1,4 +1,8 @@
-"""Mutated stress tests and edge cases for the pandas reconciliation pipeline."""
+"""
+Python Version: 3.10+ (Target: Python 3.11, Pandas 2.2.2, NumPy 1.26.4)
+Purpose: Mutated stress tests and edge cases (idempotency, extreme timezone offsets, index shuffling) for the pandas reconciliation pipeline.
+Runs-in: Isolated verifier container (/tests) under Terminal-Bench separate environment mode.
+"""
 from __future__ import annotations
 
 import importlib.util

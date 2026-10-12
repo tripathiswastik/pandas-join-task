@@ -1,4 +1,8 @@
-"""Verifier for the five independent root causes and their interactions."""
+"""
+Python Version: 3.10+ (Target: Python 3.11, Pandas 2.2.2, NumPy 1.26.4)
+Purpose: Verifier evaluation test suite checking the five independent root causes (A-E) and their interactions.
+Runs-in: Isolated verifier container (/tests) under Terminal-Bench separate environment mode.
+"""
 
 import importlib.util
 import os

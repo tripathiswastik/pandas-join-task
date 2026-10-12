@@ -21,6 +21,8 @@ COLS = ["emp_id", "headcount", "total_salary"]
 
 def load():
     spec = importlib.util.spec_from_file_location("pipeline", APP / "pipeline.py")
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load module spec from {APP / 'pipeline.py'}")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

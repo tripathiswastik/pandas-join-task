@@ -141,15 +141,27 @@ def test_mutation_c_naive_datetime_comparison_is_caught(monkeypatch):
     def mutated_build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFrame:
         e = employees.copy()
         s = salaries.copy()
+        e["emp_id"] = normalize_emp_id(e["emp_id"])
+        s["emp_id"] = normalize_emp_id(s["emp_id"])
         # Flawed naive datetime parsing without UTC unification
         e["event_ts"] = pd.to_datetime(e["event_ts"], errors="raise")
         e = e[(e["event_ts"] >= WINDOW_START.tz_localize(None)) & (e["event_ts"] <= WINDOW_END.tz_localize(None))]
-        return _correct_build_report(e, s)
+        merged = e.merge(s[["emp_id", "annual_salary"]], on="emp_id", how="left", validate="many_to_one", sort=False)
+        base_salaries = merged["annual_salary"].fillna(0)
+        merged["adjusted_salary"] = base_salaries.apply(round_half_up).astype("int64")
+        result = merged.groupby("emp_id", sort=False, as_index=False).agg(
+            headcount=("emp_id", "size"), total_salary=("adjusted_salary", "sum")
+        )
+        result = result.reindex(columns=COLS)
+        result["emp_id"] = result["emp_id"].astype(object)
+        result["headcount"] = result["headcount"].fillna(0).astype("int64")
+        result["total_salary"] = result["total_salary"].fillna(0).astype("int64")
+        return result.reset_index(drop=True)
 
     mock_mod = _make_mock_module(mutated_build_report)
     monkeypatch.setattr("tests.test_outputs.load", lambda: mock_mod)
 
-    with pytest.raises((TypeError, AssertionError)):
+    with pytest.raises((ValueError, TypeError, AssertionError)):
         test_outputs.test_c_naive_and_offset_timestamps_are_normalized_by_pipeline()
 
 

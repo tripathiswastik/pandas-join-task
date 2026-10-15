@@ -136,11 +136,20 @@ def test_c_chronology_is_not_lexical_and_boundaries_are_inclusive():
 
 # D = 20%
 def test_d_int64_types_are_explicit_for_nonempty_and_empty_results():
-    """D: both aggregate columns must be int64 even when no rows qualify."""
+    """D: both aggregate columns must be int64 even when no rows qualify or rows are unmatched."""
     m = load()
     s = sal([["A", 10]])
     got = m.build_report(emp([["A", "FULL_TIME", "2024-01-01", "x"]]), s)
     assert str(got.headcount.dtype) == "int64" and str(got.total_salary.dtype) == "int64"
+
+    # Unmatched employee rows must contribute 0 and strictly preserve int64 dtype
+    unmatched = m.build_report(
+        emp([["A", "FULL_TIME", "2024-01-01", "x"], ["B", "FULL_TIME", "2024-01-01", "x"]]),
+        s,
+    )
+    assert str(unmatched.headcount.dtype) == "int64" and str(unmatched.total_salary.dtype) == "int64"
+    assert unmatched.loc[unmatched["emp_id"].astype("string") == "B", "total_salary"].iloc[0] == 0
+
     empty = m.build_report(emp([["A", "FULL_TIME", "2025-01-01", "x"]]), s)
     assert list(empty.columns) == COLS and empty.empty
     assert str(empty.headcount.dtype) == "int64" and str(empty.total_salary.dtype) == "int64"

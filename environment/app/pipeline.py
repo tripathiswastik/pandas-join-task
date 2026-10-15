@@ -1,5 +1,4 @@
 import os
-from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import pandas as pd
 
@@ -22,56 +21,25 @@ DATA_DIR = Path(os.environ.get('DATA_DIR', str(_APP_DIR / 'data')))
 OUTPUT_PATH = Path(os.environ.get('OUTPUT_PATH', str(_APP_DIR / 'output' / 'report.csv')))
 WINDOW_START = pd.Timestamp('2024-01-01 00:00:00+00:00')
 WINDOW_END = pd.Timestamp('2024-12-31 23:59:59+00:00')
-OUTPUT_COLUMNS = ['emp_id', 'headcount', 'total_salary']
 
 
 def normalize_emp_id(series: pd.Series) -> pd.Series:
     return series.astype('string').str.strip().str.upper()
 
 
-def round_half_up(value) -> int:
-    return int(Decimal(str(value)).quantize(Decimal('1'), rounding=ROUND_HALF_UP))
-
-
 def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFrame:
+    # Intentionally flawed starter implementation.
     emp = employees.copy()
     sal = salaries.copy()
-    emp['emp_id'] = normalize_emp_id(emp['emp_id'])
-    sal['emp_id'] = normalize_emp_id(sal['emp_id'])
-
-    dup_mask = sal['emp_id'].duplicated(keep=False)
-    if dup_mask.any():
-        duplicates = list(sal.loc[dup_mask, 'emp_id'].unique())
-        raise ValueError(f'Duplicate normalized salary keys: {duplicates}')
-
-    try:
-        emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True, format='mixed')
-    except (ValueError, TypeError):
-        emp['_event_utc'] = pd.to_datetime(emp['event_ts'], errors='raise', utc=True)
-    emp = emp.loc[emp['_event_utc'].between(WINDOW_START, WINDOW_END, inclusive='both')]
-
-    merged = emp.merge(sal[['emp_id', 'annual_salary']], on='emp_id', how='left', validate='many_to_one', sort=False)
-    base_salaries = merged['annual_salary'].fillna(0)
-    merged['adjusted_salary'] = base_salaries.apply(round_half_up).astype('int64')
-
-    contractor_mask = merged['employment_type'].eq('CONTRACTOR')
-    if contractor_mask.any():
-        contractor_salaries = base_salaries.loc[contractor_mask]
-        unique_salaries = contractor_salaries.unique()
-        discount_cache = {
-            s: round_half_up(Decimal(str(s)) * Decimal('0.85'))
-            for s in unique_salaries
-        }
-        merged.loc[contractor_mask, 'adjusted_salary'] = contractor_salaries.map(discount_cache).astype('int64')
-
-    result = merged.groupby('emp_id', sort=False, as_index=False).agg(
+    emp['event_ts'] = pd.to_datetime(emp['event_ts'], errors='raise')
+    emp = emp[(emp['event_ts'] >= WINDOW_START.tz_localize(None)) & (emp['event_ts'] <= WINDOW_END.tz_localize(None))]
+    merged = emp.merge(sal, on='emp_id', how='left')
+    merged['adjusted_salary'] = merged['annual_salary'].fillna(0)
+    merged.loc[merged['employment_type'] == 'CONTRACTOR', 'adjusted_salary'] * 0.85
+    result = merged.groupby('emp_id', sort=False).agg(
         headcount=('emp_id', 'size'), total_salary=('adjusted_salary', 'sum')
-    )
-    result = result.reindex(columns=OUTPUT_COLUMNS)
-    result['emp_id'] = result['emp_id'].astype(object)
-    result['headcount'] = result['headcount'].fillna(0).astype('int64')
-    result['total_salary'] = result['total_salary'].fillna(0).astype('int64')
-    return result.reset_index(drop=True)
+    ).reset_index()
+    return result[['emp_id', 'headcount', 'total_salary']]
 
 
 def main() -> None:

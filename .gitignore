@@ -35,3 +35,8 @@ Thumbs.db
 dist/
 build/
 *.zip
+
+# Agent and swarm memory
+.swarm/
+.claude/
+.claude-flow/

@@ -31,13 +31,34 @@ jobs:
 
     - name: Type check with mypy
       run: |
-        mypy solution/pipeline.py tests/test_outputs.py build_release.py
+        mypy solution/pipeline.py tests/test_outputs.py tests/test_benchmark_integrity.py tests/test_mutation_verifier.py build_release.py
+
+    - name: Verify benchmark integrity (candidate != reference)
+      run: |
+        pytest tests/test_benchmark_integrity.py -v
+
+    - name: Verify verifier mutation resistance (catches broken behaviors)
+      run: |
+        pytest tests/test_mutation_verifier.py -v
+
+    - name: Verify candidate contains intended defects (fails test suite)
+      run: |
+        if pytest tests/test_outputs.py; then
+          echo "ERROR: Flawed candidate unexpectedly passed verification tests!"
+          exit 1
+        else
+          echo "SUCCESS: Candidate correctly failed verification tests due to intended defects."
+        fi
 
     - name: Execute reference solution
       run: |
         python solution/solve.py
 
-    - name: Run verification test suite
+    - name: Run verification test suite on resolved pipeline
       run: |
         pytest tests/test_outputs.py -v
         pytest tests/test_mutated_case.py -v
+
+    - name: Build and verify release archive
+      run: |
+        python build_release.py

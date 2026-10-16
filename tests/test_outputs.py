@@ -10,7 +10,7 @@ import pathlib
 import subprocess
 import sys
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 APP = pathlib.Path(
@@ -99,10 +99,10 @@ def test_b_column_order_and_index_values_do_not_change_result():
         [" a ", "FULL_TIME", "2024-01-01", "x"],
         ["B", "FULL_TIME", "2024-01-02", "y"],
     ])
-    e.index = [91, 3]
+    e.index = pd.Index([91, 3])
     e = e[["notes", "event_ts", "employment_type", "emp_id"]]
     s = sal([[200, "b"], [100, "A"]], columns=("annual_salary", "emp_id"))
-    s.index = [8, 4]
+    s.index = pd.Index([8, 4])
     got = m.build_report(e, s)
     assert_frame(got, [["A", 1, 100], ["B", 1, 200]])
 
@@ -186,9 +186,9 @@ def test_combined_all_five_rules_interact_correctly():
         [" b ", "CONTRACTOR", "2025-01-01T00:30:00+05:30", "x"],
         ["C", "FULL_TIME", "2025-01-01T00:00:00Z", "x"],
     ])
-    e.index = [50, 10, 90, 2]
+    e.index = pd.Index([50, 10, 90, 2])
     s = sal([[117648, "A "], [50000, "B"], [99, "C"]], columns=("annual_salary", "emp_id"))
-    s.index = [7, 8, 9]
+    s.index = pd.Index([7, 8, 9])
     got = m.build_report(e, s)
     assert_frame(got, [["A", 2, 217649], ["B", 1, 42500]])
     assert str(got.headcount.dtype) == "int64" and str(got.total_salary.dtype) == "int64"
@@ -205,10 +205,10 @@ def test_combined_reordered_inputs_interleaved_ids_and_half_up_boundaries():
         ["Z", "CONTRACTOR", "2025-01-01T00:00:00+05:30", " untouched z1 "],
         ["W", "FULL_TIME", "2025-01-01T00:00:00Z", " outside "],
     ])
-    e.index = [101, 7, 55, 2, 88, 19]
+    e.index = pd.Index([101, 7, 55, 2, 88, 19])
     e = e[["notes", "emp_id", "event_ts", "employment_type"]]
     s = sal([[50, "z"], [30, " Y "], [10, "X"]], columns=("annual_salary", "emp_id"))
-    s.index = [44, 3, 91]
+    s.index = pd.Index([44, 3, 91])
     got = m.build_report(e, s)
     assert_frame(got, [["X", 2, 19], ["Y", 2, 56], ["Z", 1, 43]])
 
@@ -220,6 +220,7 @@ def test_written_pipeline_output_matches_contract_fixture():
     env["OUTPUT_PATH"] = str(OUT)
     subprocess.run([sys.executable, str(APP / "pipeline.py")], env=env, check=True)
     out = pd.read_csv(OUT)
+    assert isinstance(out, pd.DataFrame)
     assert list(out.columns) == COLS
     assert out.to_dict("records") == [
         {"emp_id": "E001", "headcount": 2, "total_salary": 200000},

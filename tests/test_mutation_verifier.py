@@ -6,8 +6,8 @@ whenever any of the 5 required contract behaviors (A through E) is broken.
 """
 
 from decimal import Decimal, ROUND_HALF_UP
-import pandas as pd
-import pytest
+import pandas as pd  # type: ignore
+import pytest  # type: ignore
 
 from tests import test_outputs
 from tests.test_outputs import COLS
@@ -94,7 +94,9 @@ def test_mutation_a_silent_duplicate_salary_keys_is_caught(monkeypatch):
         result = merged.groupby("emp_id", as_index=False).agg(
             headcount=("emp_id", "size"), total_salary=("adjusted_salary", "sum")
         )
-        return result.reindex(columns=COLS)
+        out = result.reindex(columns=COLS)
+        assert isinstance(out, pd.DataFrame)
+        return out
 
     mock_mod = _make_mock_module(mutated_build_report)
     monkeypatch.setattr("tests.test_outputs.load", lambda: mock_mod)
@@ -145,7 +147,8 @@ def test_mutation_c_naive_datetime_comparison_is_caught(monkeypatch):
         s["emp_id"] = normalize_emp_id(s["emp_id"])
         # Flawed naive datetime parsing without UTC unification
         e["event_ts"] = pd.to_datetime(e["event_ts"], errors="raise")
-        e = e[(e["event_ts"] >= WINDOW_START.tz_localize(None)) & (e["event_ts"] <= WINDOW_END.tz_localize(None))]
+        assert isinstance(WINDOW_START, pd.Timestamp) and isinstance(WINDOW_END, pd.Timestamp)
+        e = e[(e["event_ts"] >= WINDOW_START.tz_localize(None)) & (e["event_ts"] <= WINDOW_END.tz_localize(None))]  # type: ignore
         merged = e.merge(s[["emp_id", "annual_salary"]], on="emp_id", how="left", validate="many_to_one", sort=False)
         base_salaries = merged["annual_salary"].fillna(0)
         merged["adjusted_salary"] = base_salaries.apply(round_half_up).astype("int64")
@@ -196,7 +199,9 @@ def test_mutation_e_improper_contractor_rounding_is_caught(monkeypatch):
         )
         result["headcount"] = result["headcount"].astype("int64")
         result["total_salary"] = result["total_salary"].astype("int64")
-        return result.reindex(columns=COLS)
+        out = result.reindex(columns=COLS)
+        assert isinstance(out, pd.DataFrame)
+        return out
 
     mock_mod = _make_mock_module(mutated_build_report)
     monkeypatch.setattr("tests.test_outputs.load", lambda: mock_mod)

@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import pandas as pd  # type: ignore
 
@@ -22,8 +23,6 @@ OUTPUT_PATH = Path(os.environ.get('OUTPUT_PATH', str(_APP_DIR / 'output' / 'repo
 WINDOW_START = pd.Timestamp('2024-01-01 00:00:00+00:00')
 WINDOW_END = pd.Timestamp('2024-12-31 23:59:59+00:00')
 
-
-from decimal import Decimal, ROUND_HALF_UP
 
 COLS = ['emp_id', 'headcount', 'total_salary']
 OUTPUT_COLUMNS = COLS

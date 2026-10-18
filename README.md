@@ -119,3 +119,10 @@ docker run --rm -v $(pwd)/tests:/tests pandas-benchmark bash /tests/test.sh
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+---
+
+## 🏷️ Repository Metadata & Topic Tags
+- **Core Topics**: `pandas` `data-pipeline` `benchmark` `agentic-sdlc` `terminal-bench` `python` `docker`
+- **Governance**: Follows [Antigravity AI Rules](file:///d:/ag-ai/.agents/rules/antigravity-rules.md) and [Multi-Agent SDLC Contracts](file:///d:/ag-ai/.agents/rules/multi-agent-prompts.md).

@@ -32,7 +32,7 @@ def build_report(employees: pd.DataFrame, salaries: pd.DataFrame) -> pd.DataFram
     emp = employees.copy()
     sal = salaries.copy()
     emp['event_ts'] = pd.to_datetime(emp['event_ts'], errors='raise')
-    emp = emp[(emp['event_ts'] >= WINDOW_START.tz_localize(None)) & (emp['event_ts'] <= WINDOW_END.tz_localize(None))]
+    emp = emp[(emp['event_ts'] >= WINDOW_START.tz_localize(None)) & (emp['event_ts'] <= WINDOW_END.tz_localize(None))]  # type: ignore
     merged = emp.merge(sal, on='emp_id', how='left')
     merged['adjusted_salary'] = merged['annual_salary'].fillna(0)
     merged.loc[merged['employment_type'] == 'CONTRACTOR', 'adjusted_salary'] * 0.85
@@ -56,6 +56,8 @@ def main() -> None:
 
     employees = pd.read_csv(emp_file)
     salaries = pd.read_csv(sal_file)
+    assert isinstance(employees, pd.DataFrame)
+    assert isinstance(salaries, pd.DataFrame)
     result = build_report(employees, salaries)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT_PATH, index=False)

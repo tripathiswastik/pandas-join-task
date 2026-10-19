@@ -32,7 +32,7 @@ graph TD
 ### Repository Structure
 
 ```text
-.
+pandas-join-task/
 ├── task.toml                  # Benchmark task specification, timeouts, and resource quotas
 ├── instruction.md             # Candidate prompt / instructions given to the agent
 ├── rubric.txt                 # Detailed scoring rubric (+26 positive, -22 penalty points)

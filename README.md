@@ -1,6 +1,6 @@
 # Pandas Join Pipeline Task (Hard) — Terminal-Bench
 
-![Python Version](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Pandas](https://img.shields.io/badge/pandas-2.2.2-blueviolet) ![Benchmark](https://img.shields.io/badge/benchmark-Terminal--Bench-blue)
+![Python Version](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Pandas](https://img.shields.io/badge/pandas-2.2.2-blueviolet) ![Benchmark](https://img.shields.io/badge/benchmark-Terminal--Bench-blue) [![Author](https://img.shields.io/badge/Author-Swastik%20Tripathi-blueviolet.svg)](https://www.linkedin.com/in/swastik-tripathi-52333511a/)
 
 An enterprise-grade, stateful data pipeline evaluation benchmark designed for autonomous AI coding agents and data engineering systems. It evaluates an agent's ability to diagnose and repair five interacting silent correctness bugs across multi-source Pandas joins and transformations. The benchmark enforces strict data contracts using Python 3.11, Pandas 2.2.2, Decimal round-half-up quantization, and containerized verification harnesses.
 
@@ -116,13 +116,20 @@ docker run --rm -v $(pwd)/tests:/tests pandas-benchmark bash /tests/test.sh
 - **+2 pts:** Retains first-appearance order and remains independent of input column/index order.
 - **+3 pts:** Correctly resolves holistic interactions across all 5 engineering challenges.
 
+## 👤 Author & Organization
+
+- **Author:** [Swastik Tripathi](https://github.com/tripathiswastik) • [LinkedIn](https://www.linkedin.com/in/swastik-tripathi-52333511a/)
+- **Benchmark Suite:** Terminal-Bench Data Engineering Harness
+
+---
+
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
 ---
 
 ## 🏷️ Repository Metadata & Topic Tags
-- **Core Topics**: `pandas` `data-pipeline` `benchmark` `agentic-sdlc` `terminal-bench` `python` `docker`
+- **About Description**: Enterprise data pipeline benchmark evaluating autonomous coding agents on multi-source Pandas joins, cardinality validation, and timezone unification.
+- **Core Topics**: `pandas` `data-pipeline` `benchmark` `agentic-sdlc` `terminal-bench` `data-engineering` `python` `docker`
 - **Governance**: Follows [Antigravity AI Rules](file:///d:/ag-ai/.agents/rules/antigravity-rules.md) and [Multi-Agent SDLC Contracts](file:///d:/ag-ai/.agents/rules/multi-agent-prompts.md).

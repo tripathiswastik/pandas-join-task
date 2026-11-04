@@ -132,4 +132,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🏷️ Repository Metadata & Topic Tags
 - **About Description**: Enterprise data pipeline benchmark evaluating autonomous coding agents on multi-source Pandas joins, cardinality validation, and timezone unification.
 - **Core Topics**: `pandas` `data-pipeline` `benchmark` `agentic-sdlc` `terminal-bench` `data-engineering` `python` `docker`
-- **Governance**: Follows [Antigravity AI Rules](file:///d:/ag-ai/.agents/rules/antigravity-rules.md) and [Multi-Agent SDLC Contracts](file:///d:/ag-ai/.agents/rules/multi-agent-prompts.md).
